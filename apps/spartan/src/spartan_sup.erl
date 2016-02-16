@@ -1,9 +1,5 @@
-%%%-------------------------------------------------------------------
-%% @doc spartan top level supervisor.
-%% @end
-%%%-------------------------------------------------------------------
-
 -module(spartan_sup).
+-author("Christopher Meiklejohn <christopher.meiklejohn@gmail.com>").
 
 -behaviour(supervisor).
 
@@ -28,7 +24,12 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, { {one_for_all, 0, 1}, []} }.
+    ZkRecordServer = {spartan_zk_record_server,
+                      {spartan_zk_record_server, start_link, []},
+                       permanent, 5000, worker,
+                       [spartan_zk_record_server]},
+
+    {ok, { {one_for_all, 0, 1}, [ZkRecordServer]} }.
 
 %%====================================================================
 %% Internal functions
