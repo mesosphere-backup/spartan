@@ -1,5 +1,4 @@
--module(spartan_dns_dual_dispatch_fsm_sup).
--author('Christopher Meiklejohn <christopher.meiklejohn@gmail.com>').
+-module(spartan_handler_sup).
 
 -behaviour(supervisor).
 
@@ -33,8 +32,8 @@ terminate_child(Supervisor, Pid) ->
 
 %% @doc supervisor callback.
 init([]) ->
-    Spec = {spartan_dns_dual_dispatch_fsm,
-            {spartan_dns_dual_dispatch_fsm, start_link, []},
-             temporary, 5000, worker, [spartan_dns_dual_dispatch_fsm]},
+    Spec = {spartan_handler_fsm,
+        {spartan_handler_fsm, start_link, []},
+        temporary, 5000, worker, [spartan_handler_fsm]},
 
     {ok, {{simple_one_for_one, 10, 10}, [Spec]}}.
