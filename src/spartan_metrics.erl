@@ -35,4 +35,7 @@ setup() ->
     ok = exometer:ensure([spartan, upstreams_failed], ?COUNTER, []),
 
     %% No upstreams available.
-    ok = exometer:ensure([spartan, no_upstreams_available], ?COUNTER, []).
+    ok = exometer:ensure([spartan, no_upstreams_available], ?COUNTER, []),
+
+    %% Number of times the spartan_handler_fsm fell into being killed by a timer
+    ok = exometer:ensure([spartan, timeout_kill], ?COUNTER, []).
