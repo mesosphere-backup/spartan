@@ -12,7 +12,7 @@
 
 -define(SERVER, ?MODULE).
 
--define(TIMEOUT, 3000).
+-define(TIMEOUT, 5000).
 
 -include("spartan.hrl").
 
