@@ -51,13 +51,13 @@ init([]) ->
         modules => [spartan_handler_sup]
     },
 
-    SystemdSup = #{
-        id => spartan_systemd,
-        start => {spartan_systemd, start_link, []},
+    WatchdogSup = #{
+        id => spartan_watchdog,
+        start => {spartan_watchdog, start_link, []},
         restart => permanent,
         shutdown => 5000,
         type => worker,
-        modules => [spartan_systemd]
+        modules => [spartan_watchdog]
     },
     %% Configure metrics.
     spartan_metrics:setup(),
@@ -66,7 +66,7 @@ init([]) ->
     ok = spartan_zone_setup(),
 
     %% Systemd Sup intentionally goes last
-    Children = [HandlerSup, ZkRecordServer, ConfigLoaderServer, SystemdSup],
+    Children = [HandlerSup, ZkRecordServer, ConfigLoaderServer, WatchdogSup],
     Children1 = maybe_add_udp_servers(Children),
 
     %% The top level sup should never die.
