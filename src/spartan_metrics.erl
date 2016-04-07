@@ -20,22 +20,22 @@ update(Metric, Value, Type) ->
 %% @doc Configure all metrics.
 setup() ->
     %% Successes and failures for the UDP server.
-    ok = exometer:ensure([spartan_udp_server, successes], ?COUNTER, []),
-    ok = exometer:ensure([spartan_udp_server, failures], ?COUNTER, []),
+    ok = exometer:ensure([spartan_udp_server, successes], ?SPIRAL, []),
+    ok = exometer:ensure([spartan_udp_server, failures], ?SPIRAL, []),
 
     %% Successes and failures for the TCP server.
-    ok = exometer:ensure([spartan_tcp_handler, successes], ?COUNTER, []),
-    ok = exometer:ensure([spartan_tcp_handler, failures], ?COUNTER, []),
+    ok = exometer:ensure([spartan_tcp_handler, successes], ?SPIRAL, []),
+    ok = exometer:ensure([spartan_tcp_handler, failures], ?SPIRAL, []),
 
     %% Number of queries received where we've answered only one of
     %% multiple questions presented.
-    ok = exometer:ensure([spartan, ignored_questions], ?COUNTER, []),
+    ok = exometer:ensure([spartan, ignored_questions], ?SPIRAL, []),
 
     %% No upstreams responded.
-    ok = exometer:ensure([spartan, upstreams_failed], ?COUNTER, []),
+    ok = exometer:ensure([spartan, upstreams_failed], ?SPIRAL, []),
 
     %% No upstreams available.
-    ok = exometer:ensure([spartan, no_upstreams_available], ?COUNTER, []),
+    ok = exometer:ensure([spartan, no_upstreams_available], ?SPIRAL, []),
 
     %% Number of times the spartan_handler_fsm fell into being killed by a timer
-    ok = exometer:ensure([spartan, timeout_kill], ?COUNTER, []).
+    ok = exometer:ensure([spartan, timeout_kill], ?SPIRAL, []).
