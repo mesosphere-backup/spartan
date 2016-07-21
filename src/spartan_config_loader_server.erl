@@ -148,7 +148,7 @@ get_masters_exhibitor(URI) ->
             IPAddresses = lists:map(fun spartan_app:parse_ipv4_address/1, ExhibitorHostnames),
             {ok, [{IPAddress, ?MESOS_DNS_PORT} || IPAddress <- IPAddresses]};
         Error ->
-            lager:info("Failed to retrieve information from exhibitor to configure Spartan: ~p", [Error]),
+            lager:warning("Failed to retrieve information from exhibitor to configure Spartan: ~p", [Error]),
             {error, unavailable}
     end.
 
