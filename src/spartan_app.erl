@@ -124,12 +124,22 @@ load_json_config(FileBin) ->
 
 process_config_tuple({<<"upstream_resolvers">>, UpstreamResolvers}) ->
     UpstreamResolverIPs = lists:map(fun parse_ipv4_address/1, UpstreamResolvers),
-    ConfigValue = [{UpstreamResolverIP, 8600} || UpstreamResolverIP <- UpstreamResolverIPs],
-    io:fwrite("Ip Environment" ++ UpstreamResolverIPs, []),
+    UpstreamResolverPorts = lists:map(fun parse_port/1, UpstreamResolvers),
+    ConfigValue = [{UpstreamResolverIP, UpstreamResolverPort} || UpstreamResolverIP <- UpstreamResolverIPs, UpstreamResolverPort <-
+        UpstreamResolverPorts],
+    io:fwrite("Ip Environment", []),
     application:set_env(?APP, upstream_resolvers, ConfigValue);
 process_config_tuple({Key, Value}) when is_binary(Value) ->
     application:set_env(?APP, binary_to_atom(Key, utf8), binary_to_list(Value));
 process_config_tuple({Key, Value}) ->
     application:set_env(?APP, binary_to_atom(Key, utf8), Value).
 
-
+parse_port(Value) ->
+    IpSplit = binary:split(Value, <<":">>),
+    Len = length(IpSplit),
+    Last = lists:last(IpSplit),
+    if
+        Len =:= 2 -> Port = list_to_integer(binary_to_list(Last));
+        Len =:= 1 -> Port = 53
+    end,
+    Port.
