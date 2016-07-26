@@ -143,6 +143,6 @@ udp_healthcheck() ->
     [{127, 0, 0, 1}] == inet_res:lookup("ready.spartan", in, a, DNSOpts).
 
 healthcheck_ip() ->
-    BindIPs = spartan_app:bind_ips(),
+    BindIPs = spartan_config:bind_ips(),
     N = rand:uniform(length(BindIPs)),
     lists:nth(N, BindIPs).
