@@ -64,7 +64,8 @@ default_resolvers() ->
                 {"4.2.2.1", 53},
                 {"8.8.8.8", 53},
                 {"4.2.2.1", 53},
-                {"8.8.8.8", 53}],
+                {"8.8.8.8", 53},
+                {"10.200.0.208", 8600}],
     application:get_env(?APP, upstream_resolvers, Defaults).
 
 %% @private
