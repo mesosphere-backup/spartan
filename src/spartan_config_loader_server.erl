@@ -125,9 +125,11 @@ get_masters() ->
     end.
 
 get_masters_file() ->
+    lager:warning("Pillando lista"),
     {ok, FileBin} = file:read_file("/opt/mesosphere/etc/master_list"),
     MastersBinIPs = jsx:decode(FileBin, [return_maps]),
     IPAddresses = lists:map(fun spartan_app:parse_ipv4_address/1, MastersBinIPs),
+    lager:warning("Lista pillada"),
     {ok, [{IPAddress, ?MESOS_DNS_PORT} || IPAddress <- IPAddresses]}.
 
 get_masters_exhibitor_uri() ->
