@@ -10,7 +10,7 @@
 -define(TCP_LISTENER_NAME, spartan_tcp_listener).
 
 -define(COMPILE_OPTIONS,
-    [verbose,
+        [verbose,
          report_errors,
          report_warnings,
          no_error_module_mismatch,
