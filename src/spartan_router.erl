@@ -40,14 +40,11 @@ mesos_resolvers() ->
 %% This one is a little bit more complicated...
 %% @private
 erldns_resolvers() ->
-    lager:warning("erldns resolvers"),
     ErlDNSServers = application:get_env(erldns, servers, []),
     retrieve_servers(ErlDNSServers, []).
 retrieve_servers([], Acc) ->
-    lager:warning(Acc),
     Acc;
 retrieve_servers([Config|Rest], Acc) ->
-    lager:warning("retrieve servers"),
     case {
             inet:parse_ipv4_address(proplists:get_value(address, Config, "")),
             proplists:get_value(port, Config),
@@ -63,11 +60,11 @@ retrieve_servers([Config|Rest], Acc) ->
 
 %% @private
 default_resolvers() ->
-    Defaults =[{"8.8.8.8", 53},
-        {"4.2.2.1", 53},
-        {"8.8.8.8", 53},
-        {"4.2.2.1", 53},
-        {"8.8.8.8", 53}],
+    Defaults = [{"8.8.8.8", 53},
+                {"4.2.2.1", 53},
+                {"8.8.8.8", 53},
+                {"4.2.2.1", 53},
+                {"8.8.8.8", 53}],
     application:get_env(?APP, upstream_resolvers, Defaults).
 
 %% @private
