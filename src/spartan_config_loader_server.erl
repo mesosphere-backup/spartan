@@ -143,8 +143,8 @@ get_masters_exhibitor() ->
 
 get_masters_exhibitor(URI) ->
     Options = [
-        {timeout, spartan_config:timeout()},
-        {connect_timeout, spartan_config:connect_timeout()}
+        {timeout, spartan_config:exhibitor_timeout()},
+        {connect_timeout, spartan_config:exhibitor_timeout()}
     ],
     case httpc:request(get, {URI, []}, Options, [{body_format, binary}]) of
         {ok, {{_, 200, _}, _, Body}} ->
