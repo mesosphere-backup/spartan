@@ -31,8 +31,8 @@
 
 start(_StartType, _StartArgs) ->
     maybe_load_json_config(), %% Maybe load the relevant DCOS configuration
-    Ret = spartan_sup:start_link(),
     maybe_start_tcp_listener(),
+    Ret = spartan_sup:start_link(),
     Ret.
 
 stop(_State) ->
