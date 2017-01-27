@@ -105,9 +105,13 @@ code_change(_OldVsn, State, _Extra) ->
 maybe_load_masters() ->
     case get_masters() of
         {ok, Masters} ->
+            M = application:get_env(?APP, mesos_resolvers, []),
             application:set_env(?APP, mesos_resolvers, Masters),
+            lager:debug("Updated masters to ~p from ~p", [Masters, M]),
             ok;
         {error, _} ->
+            M = application:get_env(?APP, mesos_resolvers, []),
+            lager:warning("Failed to load masters, current masters: ~p", [M]),
             error
     end.
 
@@ -126,9 +130,11 @@ get_masters() ->
     end.
 
 get_masters_file() ->
-    {ok, FileBin} = file:read_file("/opt/mesosphere/etc/master_list"),
+    File = "/opt/mesosphere/etc/master_list",
+    {ok, FileBin} = file:read_file(File),
     MastersBinIPs = jsx:decode(FileBin, [return_maps]),
     IPAddresses = lists:map(fun spartan_app:parse_ipv4_address/1, MastersBinIPs),
+    lager:debug("Got master ip addresses from masters file ~p: ~p", [File, IPAddresses]),
     {ok, [{IPAddress, ?MESOS_DNS_PORT} || IPAddress <- IPAddresses]}.
 
 get_masters_exhibitor_uri() ->
@@ -151,6 +157,7 @@ get_masters_exhibitor(URI) ->
             ExhibitorStatuses = jsx:decode(Body, [return_maps]),
             ExhibitorHostnames = [Hostname || #{<<"hostname">> := Hostname} <- ExhibitorStatuses],
             IPAddresses = lists:map(fun spartan_app:parse_ipv4_address/1, ExhibitorHostnames),
+            lager:debug("Got master ip addresses from exhibitor uri ~p: ~p", [URI, IPAddresses]),
             {ok, [{IPAddress, ?MESOS_DNS_PORT} || IPAddress <- IPAddresses]};
         Error ->
             lager:warning("Failed to retrieve information from exhibitor to configure Spartan: ~p", [Error]),
