@@ -69,16 +69,22 @@ default_resolvers() ->
 
 %% @private
 -spec(find_upstream(Name :: binary(), Labels :: [binary()]) -> [{string(), inet:port_number()}]).
-find_upstream(_Name, [<<"mesos">>|_]) ->
+find_upstream(Name, Z = [<<"mesos">>|_]) ->
+    lager:debug("find_upstream mesos: ~p ~p", [Name, Z]),
     mesos_resolvers();
-find_upstream(_Name, [<<"zk">>|_]) ->
+find_upstream(Name, Z = [<<"zk">>|_]) ->
+    lager:debug("find_upstream zk: ~p ~p", [Name, Z]),
     erldns_resolvers();
-find_upstream(_Name, [<<"spartan">>|_]) ->
+find_upstream(Name, Z = [<<"spartan">>|_]) ->
+    lager:debug("find_upstream spartan: ~p ~p", [Name, Z]),
     erldns_resolvers();
-find_upstream(Name, _Labels) ->
+find_upstream(Name, Labels) ->
+    lager:debug("find_upstream upstream: ~p ~p", [Name, Labels]),
     case erldns_zone_cache:get_authority(Name) of
-        {ok, _} ->
+        {ok, SOA} ->
+            lager:debug("find_upstream soa: ~p", [SOA]),
             erldns_resolvers();
         _ ->
+            lager:debug("find_upstream default resolvers"),
             default_resolvers()
     end.
