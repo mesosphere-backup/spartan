@@ -47,9 +47,10 @@ start_link(LocalIP) ->
 %%%===================================================================
 init([LocalIP]) ->
     Port = spartan_config:udp_port(),
+    RecBuf = application:get_env(spartan, udp_recbuf, 1024 * 1024),
     {ok, Socket} = gen_udp:open(Port, [
         {reuseaddr, true}, {active, true}, binary,
-        {ip, LocalIP}, {recbuf, 1024*1024}
+        {ip, LocalIP}, {recbuf, RecBuf}
     ]),
     link(Socket),
     {ok, #state{port = Port, socket = Socket}}.
