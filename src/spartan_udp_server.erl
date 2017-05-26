@@ -26,7 +26,8 @@
 %%% API
 %%%===================================================================
 
-do_reply(To = {Pid, IP, Port}, Data) ->
+-spec(do_reply(spartan_handler_fsm:from_key(), binary()) -> ok).
+do_reply(To = {Pid, {IP, Port}}, Data) ->
     lager:debug("Doing reply to ~p: ~p", [To, Data]),
     gen_server:cast(Pid, {send_behalf, IP, Port, Data}).
 
@@ -46,7 +47,10 @@ start_link(LocalIP) ->
 %%%===================================================================
 init([LocalIP]) ->
     Port = spartan_config:udp_port(),
-    {ok, Socket} = gen_udp:open(Port, [{reuseaddr, true}, {active, true}, binary, {ip, LocalIP}]),
+    {ok, Socket} = gen_udp:open(Port, [
+        {reuseaddr, true}, {active, true}, binary,
+        {ip, LocalIP}, {recbuf, 1024*1024}
+    ]),
     link(Socket),
     {ok, #state{port = Port, socket = Socket}}.
 
@@ -61,13 +65,12 @@ handle_cast(_Request, State) ->
 
 handle_info({udp, RecvSocket, FromIP, FromPort, Data},
             State = #state{socket = Socket}) when Socket == RecvSocket ->
-    case spartan_handler_sup:start_child([{?MODULE, {self(), FromIP, FromPort}}, Data]) of
+    From = {self(), {FromIP, FromPort}},
+    case spartan_handler_fsm:start({?MODULE, From}, Data) of
         {ok, Pid} when is_pid(Pid) ->
-            spartan_metrics:update([?MODULE, successes], 1, ?COUNTER),
             ok;
-        Else ->
-            lager:warning("Failed to start query handler: ~p", [Else]),
-            spartan_metrics:update([?MODULE, failures], 1, ?COUNTER),
+        {error, overload} ->
+            spartan_metrics:update([?MODULE, overload], 1, ?COUNTER),
             error
     end,
     {noreply, State};
